@@ -10,6 +10,7 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
+import { AdviceService } from '../common/advice.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
@@ -19,11 +20,16 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 export class TasksController {
-  constructor(private readonly tasksService: TasksService) { }
+  constructor(
+    private readonly tasksService: TasksService,
+    private readonly adviceService: AdviceService,
+  ) {}
 
   @Post()
-  create(@Req() req: any, @Body() dto: CreateTaskDto) {
-    return this.tasksService.create(req.user.id, dto);
+  async create(@Req() req: any, @Body() dto: CreateTaskDto) {
+    const task = await this.tasksService.create(req.user.id, dto);
+    const advice = await this.adviceService.getAdvice();
+    return { task, advice };
   }
 
   @Get()
@@ -32,8 +38,10 @@ export class TasksController {
   }
 
   @Get(':id')
-  findOne(@Req() req: any, @Param('id') id: string) {
-    return this.tasksService.findOne(req.user.id, id);
+  async findOne(@Req() req: any, @Param('id') id: string) {
+    const task = await this.tasksService.findOne(req.user.id, id);
+    const advice = await this.adviceService.getAdvice();
+    return { task, advice };
   }
 
   @Patch(':id')

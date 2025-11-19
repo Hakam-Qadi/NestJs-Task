@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { HttpModule } from '@nestjs/axios';
+import { AdviceService } from './common/advice.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
@@ -27,9 +29,10 @@ import { AuthModule } from './auth/auth.module';
     }),
     TasksModule,
     UsersModule,
-    AuthModule
+    AuthModule,
+    HttpModule
   ],
   controllers: [],
-  providers: [],
+  providers: [AdviceService],
 })
 export class AppModule { }
