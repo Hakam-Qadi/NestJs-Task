@@ -1,26 +1,73 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Task } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 
 @Injectable()
 export class TasksService {
-  create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+  constructor(
+    @InjectRepository(Task)
+    private readonly taskRepo: Repository<Task>,
+  ) { }
+
+  async create(userId: string, dto: CreateTaskDto) {
+    const task = this.taskRepo.create({
+      ...dto,
+      dueDate: dto.dueDate ? new Date(dto.dueDate) : null,
+      user: { id: userId },
+    });
+    return await this.taskRepo.save(task);
   }
 
-  findAll() {
-    return `This action returns all tasks`;
+  async findAll(userId: string) {
+    return this.taskRepo.find({
+      where: { user: { id: userId } },
+      order: { createdAt: 'DESC' },
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(userId: string, id: string) {
+    const task = await this.taskRepo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+    if (task.user.id !== userId) throw new ForbiddenException('Access denied');
+
+    const { user, ...result } = task;
+    return result;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(userId: string, id: string, dto: UpdateTaskDto) {
+    const task = await this.taskRepo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+    if (task.user.id !== userId) throw new ForbiddenException('Access denied');
+
+    Object.assign(task, {
+      ...dto,
+      dueDate: dto.dueDate ? new Date(dto.dueDate) : task.dueDate,
+    });
+
+    return await this.taskRepo.save(task);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  async remove(userId: string, id: string) {
+    const task = await this.taskRepo.findOne({
+      where: { id },
+      relations: ['user'],
+    });
+
+    if (!task) throw new NotFoundException('Task not found');
+    if (task.user.id !== userId) throw new ForbiddenException('Access denied');
+
+    await this.taskRepo.remove(task);
+    return { message: 'Task deleted successfully' };
   }
 }

@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalGuard } from './guards/local.guard';
-import { JwtAuthGuard } from './guards/jwt.guard';
-import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
 import { RegisterDto } from 'src/auth/dto/Register.dto';
+import { LoginDto } from './dto/login.dto';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -21,15 +21,8 @@ export class AuthController {
     @UseGuards(LocalGuard)
     @UsePipes(new ValidationPipe())
     // to make swagger show the expected body
-    @ApiBody({
-        schema: {
-            type: 'object',
-            properties: {
-                email: { type: 'string', example: 'john@example.com' },
-                password: { type: 'string', example: 'StrongPass@123' },
-            },
-        },
-    })
+    @ApiBody({ type: LoginDto })
+
     async login(@Req() req: any) {
         return this.authService.login(req.user);
     }
