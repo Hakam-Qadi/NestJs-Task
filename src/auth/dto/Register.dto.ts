@@ -8,7 +8,7 @@ import {
     Matches
 } from "class-validator";
 
-export class CreateUserDto {
+export class RegisterDto {
 
 
     @ApiProperty({
