@@ -3,9 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { TasksModule } from './tasks/tasks.module';
-import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
-import { TasksController } from './tasks/tasks.controller';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
