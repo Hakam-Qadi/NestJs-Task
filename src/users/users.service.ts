@@ -1,25 +1,85 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from './entities/user.entity';
+import { Repository } from 'typeorm';
+import { JwtService } from '@nestjs/jwt';
+import { UpdateUserDto } from './dto/update-user.dto';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-    create(createUserDto: CreateUserDto) {
-        return 'This action adds a new user';
+    constructor(
+        @InjectRepository(User)
+        private readonly userRepository: Repository<User>,
+        private readonly jwtService: JwtService,
+    ) { }
+
+    async getProfile(id: string) {
+        try {
+            const user = await this.userRepository.findOne({
+                where: { id },
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                    createdAt: true,
+                    updatedAt: true,
+                },
+            });
+
+            if (!user) {
+                throw new UnauthorizedException('User not found');
+            }
+
+            return user;
+
+        } catch (err) {
+            throw new UnauthorizedException('Invalid or expired token');
+        }
     }
 
-    findAll() {
-        return `This action returns all users`;
+    async update(id: string, updateUserDto: UpdateUserDto) {
+        const user = await this.userRepository.findOne({ where: { id } });
+
+        if (!user) {
+            throw new UnauthorizedException('User not found');
+        }
+
+        if (updateUserDto.name) {
+            user.name = updateUserDto.name;
+        }
+
+        await this.userRepository.save(user);
+
+        const { password, ...result } = user;
+        return result;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} user`;
+    async resetPassword(id: string, updateUserDto: UpdateUserDto) {
+        const user = await this.userRepository.findOne({ where: { id } });
+
+        if (!user) {
+            throw new UnauthorizedException('User not found');
+        }
+
+        user.password = await bcrypt.hash(updateUserDto.password, 10);
+
+        await this.userRepository.save(user);
+
+        return { message: 'Password reset successfully' };
     }
 
-    update(id: number, updateUserDto: CreateUserDto) {
-        return `This action updates a #${id} user`;
+
+    async deleteAccount(id: string) {
+        const user = await this.userRepository.findOne({ where: { id } });
+
+        if (!user) {
+            throw new UnauthorizedException('User not found');
+        }
+
+        await this.userRepository.delete(id);
+
+        return { message: 'Account deleted successfully' };
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} user`;
-    }
 }
