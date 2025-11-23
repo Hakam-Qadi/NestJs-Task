@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { swaggerConfig } from './config/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -14,13 +15,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
 
   // Swagger setup
-  const config = new DocumentBuilder()
-    .setTitle('Task Manager API')
-    .setDescription('API documentation for the Task Manager')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  const documentFactory = () => SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api/docs', app, documentFactory);
 
   await app.listen(process.env.PORT ?? 3000);
