@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AdviceService } from './advice.service';
+import { AdviceService } from './integrations/advice.service';
 import { HttpModule } from '@nestjs/axios';
 
 @Module({
