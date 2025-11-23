@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
-import { serviceConfig } from 'src/config/env.config';
+import { serviceConfig } from '../../config/env.config';
 
 @Injectable()
 export class AdviceService {

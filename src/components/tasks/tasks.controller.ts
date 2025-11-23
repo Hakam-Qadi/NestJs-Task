@@ -16,7 +16,7 @@ import { TasksService } from './tasks.service';
 import { AdviceService } from '../../common/integrations/advice.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('tasks')
