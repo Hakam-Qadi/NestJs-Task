@@ -51,8 +51,7 @@ export class UsersService {
 
         await this.userRepository.save(user);
 
-        const { password, ...result } = user;
-        return result;
+        return user;
     }
 
     async resetPassword(id: string, updateUserDto: UpdateUserDto) {
