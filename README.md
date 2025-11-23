@@ -2,6 +2,30 @@
 
 A minimal NestJS example project with authentication, users and tasks modules.
 
+## Features
+
+- User authentication with JWT and local strategies
+- User management (CRUD)
+- Task management (CRUD)
+- Global exception handling and response interceptors
+- Modular structure for scalability
+
+## Project Structure
+
+```
+src/
+	app.module.ts           # Root module
+	main.ts                 # Application entry point
+	common/                 # Shared modules, guards, filters, interceptors, strategies
+	components/
+		auth/                 # Authentication logic (controllers, services, DTOs)
+		tasks/                # Task management (controllers, services, DTOs, entities)
+		users/                # User management (controllers, services, DTOs, entities)
+	config/                 # Configuration files (env, swagger, validation)
+test/                     # End-to-end tests
+```
+
+
 ## Prerequisites
 
 - Node.js (v16 or later recommended)
@@ -39,6 +63,16 @@ JWT_SECRET=dummy_jwt_secret
 
 ```
 
+## Database
+
+This project expects a PostgreSQL database. Configure your connection in the `.env` file as shown above. Make sure the database exists and credentials are correct. Example command to test connection (using psql):
+
+```powershell
+psql "host=localhost port=5432 dbname=my_database user=user password=pass1234" -c "SELECT 1;"
+```
+
+You may need to create the database manually if it does not exist.
+
 ## Common scripts
 
 Most NestJS projects include standard npm scripts. Check `package.json` for exact names. Typical commands:
@@ -73,6 +107,16 @@ The compiled files will be in the `dist/` folder (default for NestJS). Start the
 ```powershell
 node dist/main.js
 ```
+
+## API Documentation
+
+This project uses Swagger for API documentation. Once the app is running, visit:
+
+```
+http://localhost:3000/api/docs
+```
+
+to view and interact with the API docs (URL may vary if you change the port).
 
 ## Tests
 
