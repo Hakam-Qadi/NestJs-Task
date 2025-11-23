@@ -10,10 +10,10 @@ import {
   UseGuards
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { AdviceService } from '../common/advice.service';
+import { AdviceService } from '../../common/advice.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('tasks')

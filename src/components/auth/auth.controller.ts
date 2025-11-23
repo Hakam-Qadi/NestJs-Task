@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LocalGuard } from './guards/local.guard';
-import { RegisterDto } from 'src/auth/dto/Register.dto';
+import { LocalGuard } from '../../common/guards/local.guard';
+import { RegisterDto } from 'src/components/auth/dto/Register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ApiBody } from '@nestjs/swagger';
 
