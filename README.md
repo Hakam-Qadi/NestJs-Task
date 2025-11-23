@@ -63,9 +63,30 @@ JWT_SECRET=dummy_jwt_secret
 
 ```
 
+
 ## Database
 
-This project expects a PostgreSQL database. Configure your connection in the `.env` file as shown above. Make sure the database exists and credentials are correct. Example command to test connection (using psql):
+This project expects a PostgreSQL database. You can run the database using Docker (recommended) or connect to an existing instance.
+
+### Using Docker Compose
+
+This repository includes a `docker-compose.yml` file to quickly start a PostgreSQL database in a container. To start the database:
+
+```powershell
+docker-compose up -d
+```
+
+This will launch a PostgreSQL container with the configuration specified in `docker-compose.yml`. Make sure your `.env` file matches the credentials and database name set in the compose file.
+
+To stop the database:
+
+```powershell
+docker-compose down
+```
+
+### Manual Connection
+
+If you prefer to use your own PostgreSQL instance, configure your connection in the `.env` file as shown above. Make sure the database exists and credentials are correct. Example command to test connection (using psql):
 
 ```powershell
 psql "host=localhost port=5432 dbname=my_database user=user password=pass1234" -c "SELECT 1;"
