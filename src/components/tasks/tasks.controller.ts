@@ -7,7 +7,10 @@ import {
   Param,
   Delete,
   Req,
-  UseGuards
+  UseGuards,
+  Query,
+  ParseIntPipe,
+  DefaultValuePipe
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { AdviceService } from '../../common/integrations/advice.service';
@@ -23,7 +26,7 @@ export class TasksController {
   constructor(
     private readonly tasksService: TasksService,
     private readonly adviceService: AdviceService,
-  ) {}
+  ) { }
 
   @Post()
   async create(@Req() req: any, @Body() dto: CreateTaskDto) {
@@ -33,8 +36,10 @@ export class TasksController {
   }
 
   @Get()
-  findAll(@Req() req: any) {
-    return this.tasksService.findAll(req.user.id);
+  findAll(@Req() req: any,
+    @Query('page', ParseIntPipe, new DefaultValuePipe(1)) page: number,
+    @Query('count', ParseIntPipe, new DefaultValuePipe(10)) count: number) {
+    return this.tasksService.findAll(req.user.id, page, count);
   }
 
   @Get(':id')

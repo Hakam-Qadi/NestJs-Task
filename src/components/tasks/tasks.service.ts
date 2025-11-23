@@ -21,12 +21,29 @@ export class TasksService {
     return await this.taskRepo.save(task);
   }
 
-  async findAll(userId: string) {
-    return this.taskRepo.find({
+  async findAll(userId: string, page: number, count: number) {
+
+    if (!page || !count) {
+      console.log("Page and Count are missing");
+      return;
+    }
+
+    const skip = (page - 1) * count;
+    const [items, total] = await this.taskRepo.findAndCount({
       where: { user: { id: userId } },
+      skip,
+      take: count,
       order: { createdAt: 'DESC' },
     });
+    return {
+      total,
+      page,
+      count,
+      totalPages: Math.ceil(total / count),
+      items
+    };
   }
+
 
   async findOne(userId: string, id: string) {
     const task = await this.taskRepo.findOne({
