@@ -3,7 +3,7 @@ import Joi from 'joi';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 const nodeEnv = process.env.NODE_ENV || 'development';
-const envFilePath = path.resolve(process.cwd(), `.env.${nodeEnv}`);
+const envFilePath = path.resolve(process.cwd(), `.env`);
 dotenv.config({ path: envFilePath });
 
 export const envSchema = Joi.object({
@@ -23,5 +23,9 @@ export const envSchema = Joi.object({
 }).unknown(); // allow other env variables
 
 export const { error, value: envVars } = envSchema.validate(process.env, { abortEarly: false });
+if (error) {
+    console.error('Environment validation error(s):', error.details.map(d => d.message).join('; '));
+    process.exit(1);
+}
 console.log(envVars)
 
