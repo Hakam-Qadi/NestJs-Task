@@ -20,6 +20,8 @@ export const envSchema = Joi.object({
     JWT_SECRET: Joi.string().required(),
     ADVICE_API_URL: Joi.string().uri().required(),
 
+    GOOGLE_API_KEY: Joi.string().required(),
+    AI_MODEL: Joi.string().required(),
 }).unknown(); // allow other env variables
 
 export const { error, value: envVars } = envSchema.validate(process.env, { abortEarly: false });
@@ -28,4 +30,3 @@ if (error) {
     process.exit(1);
 }
 console.log(envVars)
-
