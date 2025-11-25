@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { AdviceService } from './common/integrations/advice.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { join } from 'path';
 import { TasksModule } from './components/tasks/tasks.module';
 import { UsersModule } from './components/users/users.module';
 import { AuthModule } from './components/auth/auth.module';
+import { AiModule } from './components/ai/ai.module';
 
 @Module({
   imports: [
@@ -30,9 +30,10 @@ import { AuthModule } from './components/auth/auth.module';
     TasksModule,
     UsersModule,
     AuthModule,
-    HttpModule
+    HttpModule,
+    AiModule
   ],
   controllers: [],
-  providers: [AdviceService],
+  providers: [],
 })
 export class AppModule { }

@@ -16,5 +16,9 @@ export const serviceConfig = {
     },
     api: {
         adviceApiUrl: envVars.ADVICE_API_URL,
+    },
+    ai: {
+        googleApiKey: envVars.GOOGLE_API_KEY,
+        aiModel: envVars.AI_MODEL,
     }
 };

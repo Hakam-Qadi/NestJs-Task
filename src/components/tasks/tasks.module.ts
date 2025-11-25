@@ -9,5 +9,9 @@ import { CommonModule } from '../../common/common.module';
   imports: [TypeOrmModule.forFeature([Task]), CommonModule],
   controllers: [TasksController],
   providers: [TasksService],
+  exports: [
+    TasksService,
+    TypeOrmModule,  // allows repositories to be reused
+  ],
 })
-export class TasksModule {}
+export class TasksModule { }
