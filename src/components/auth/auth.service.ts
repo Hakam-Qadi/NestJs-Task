@@ -62,7 +62,7 @@ export class AuthService {
 
     async generateTokens(user: any) {
         const payload = { id: user.id, email: user.email };
-        const accessToken = this.getAccessToken(payload);
+        const token = this.getAccessToken(payload);
         const refreshToken = this.getRefreshToken(payload);
 
         //* multible refresh tokens (RefreshToken model)
@@ -71,13 +71,13 @@ export class AuthService {
         // await this.saveHashedRefreshToken(user.id, refreshToken, refreshExpiry);
 
         await this.saveHashedRefreshToken(user.id, refreshToken);
-        return { accessToken, refreshToken };
+        return { token, refreshToken };
     }
 
     async login(user: any) {
         const tokens = await this.generateTokens(user)
         return {
-            token: tokens.accessToken,
+            token: tokens.token,
             refreshToken: tokens.refreshToken,
             name: user.name,
         };
@@ -104,7 +104,7 @@ export class AuthService {
         const tokens = await this.generateTokens(user);
 
         return {
-            token: tokens.accessToken,
+            token: tokens.token,
             refreshToken: tokens.refreshToken,
             name: user.name,
             email: user.email,
