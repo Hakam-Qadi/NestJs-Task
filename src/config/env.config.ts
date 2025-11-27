@@ -6,6 +6,9 @@ export const serviceConfig = {
         appName: envVars.APP_NAME,
         appVersion: envVars.APP_VERSION,
         jwtSecret: envVars.JWT_SECRET,
+        jwtExpiry: envVars.JWT_EXPIRY,
+        jwtRefreshSecret: envVars.JWT_REFRESH_SECRET,
+        jwtRefreshExpiry: envVars.JWT_REFRESH_EXPIRY,
     },
     db: {
         port: envVars.DB_PORT,

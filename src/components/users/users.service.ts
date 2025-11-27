@@ -16,7 +16,8 @@ export class UsersService {
             const user = await this.prisma.user.findUnique({
                 where: { id },
                 omit: {
-                    password: true
+                    password: true,
+                    refreshHash: true
                 },
                 include: {
                     tasks: true

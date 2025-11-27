@@ -18,6 +18,10 @@ export const envSchema = Joi.object({
     DB_NAME: Joi.string().required(),
 
     JWT_SECRET: Joi.string().required(),
+    JWT_EXPIRY: Joi.string().required(),
+    JWT_REFRESH_SECRET: Joi.string().required(),
+    JWT_REFRESH_EXPIRY: Joi.string().required(),
+
     ADVICE_API_URL: Joi.string().uri().required(),
 
     GOOGLE_API_KEY: Joi.string().required(),
