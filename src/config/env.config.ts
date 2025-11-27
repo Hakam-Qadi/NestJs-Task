@@ -13,6 +13,7 @@ export const serviceConfig = {
         username: envVars.DB_USERNAME,
         password: envVars.DB_PASSWORD,
         name: envVars.DB_NAME,
+        url: envVars.DB_URL,
     },
     api: {
         adviceApiUrl: envVars.ADVICE_API_URL,
