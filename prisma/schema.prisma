@@ -23,11 +23,12 @@ enum TaskStatus {
 }
 
 model User {
-  id       String  @id @default(uuid()) @map("id")
-  name     String?
-  email    String  @unique
-  password String
-  tasks    Task[]
+  id          String  @id @default(uuid()) @map("id")
+  name        String?
+  email       String  @unique
+  password    String
+  tasks       Task[]
+  refreshHash String?
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -46,3 +47,14 @@ model Task {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 }
+
+//* multiple refresh tokens (multi-device)
+// model RefreshToken {
+//   id         String   @id @default(uuid())
+//   tokenHash  String
+//   userId     String
+//   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   createdAt  DateTime @default(now())
+//   expiresAt  DateTime
+//   device     String?
+// }
