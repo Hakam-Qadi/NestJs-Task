@@ -15,13 +15,12 @@ export class UsersService {
         try {
             const user = await this.prisma.user.findUnique({
                 where: { id },
-                select: {
-                    id: true,
-                    name: true,
-                    email: true,
-                    createdAt: true,
-                    updatedAt: true,
+                omit: {
+                    password: true
                 },
+                include: {
+                    tasks: true
+                }
             });
 
             if (!user) throw new UnauthorizedException('User not found');
@@ -62,7 +61,7 @@ export class UsersService {
     }
 
     async deleteAccount(id: string) {
-        const user = await this.prisma.user.findUnique({ where: { id } });
+        const user = await this.prisma.user.findUnique({ where: { id }, omit: { password: true } });
 
         if (!user) throw new UnauthorizedException('User not found');
 
