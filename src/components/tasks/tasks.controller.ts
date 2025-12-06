@@ -36,10 +36,12 @@ export class TasksController {
   }
 
   @Get()
-  findAll(@Req() req: any,
+  findAll(
+    @Req() req: any,
     @Query('page', ParseIntPipe, new DefaultValuePipe(1)) page: number,
-    @Query('count', ParseIntPipe, new DefaultValuePipe(10)) count: number) {
-    return this.tasksService.findAll(req.user.id, page, count);
+    @Query('limit', ParseIntPipe, new DefaultValuePipe(10)) limit: number
+  ) {
+    return this.tasksService.findAll(req.user.id, page, limit);
   }
 
   @Get(':id')

@@ -18,13 +18,12 @@ export class TasksService {
     });
   }
 
-  async findAll(userId: string, page: number, count: number) {
-    if (!page || !count) {
-      console.log('Page and Count are missing');
+  async findAll(userId: string, page: number, limit: number) {
+    if (!page || !limit) {
+      console.log('Page or Limit are missing');
       return;
     }
-
-    const skip = (page - 1) * count;
+    const skip = (page - 1) * limit;
 
     const total = await this.prisma.task.count({
       where: { userId },
@@ -33,15 +32,15 @@ export class TasksService {
     const items = await this.prisma.task.findMany({
       where: { userId },
       skip,
-      take: count,
+      take: limit,
       orderBy: { createdAt: 'desc' },
     });
 
     return {
       total,
       page,
-      count,
-      totalPages: Math.ceil(total / count),
+      limit,
+      totalPages: Math.ceil(total / limit),
       items,
     };
   }
