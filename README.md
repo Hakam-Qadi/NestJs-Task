@@ -26,6 +26,50 @@ test/                     # End-to-end tests
 ```
 
 
+## Prisma Setup & Usage
+
+Prisma is used for database access and migrations in this project.
+
+### 1. Initialize Prisma
+
+If you need to initialize Prisma in a new project:
+
+```shell
+npx prisma init
+```
+
+This creates the `prisma/` folder with `schema.prisma`.
+
+### 2. Run Migrations
+
+To apply schema changes to your database:
+
+```shell
+npx prisma migrate dev --name <migration-name>
+```
+
+This creates a new migration and updates your database.
+
+### 3. Open Prisma Studio
+
+To visually inspect and edit your database:
+
+```shell
+npx prisma studio
+```
+
+This opens a web UI for your database.
+
+### 4. Seed the Database
+
+To seed initial data:
+
+```shell
+npx prisma db seed
+```
+
+For more details, see the [Prisma documentation](https://www.prisma.io/docs/).
+
 ## Prerequisites
 
 - Node.js (v16 or later recommended)
