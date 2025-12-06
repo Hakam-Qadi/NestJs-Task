@@ -2,8 +2,7 @@ import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/comm
 import { AiService } from './ai.service';
 import { SendMessageDto } from './dto/send-message.dto';
 import { ApiBearerAuth, ApiBody } from '@nestjs/swagger';
-import { TasksService } from '../tasks/tasks.service';
-import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
+import { JwtAuthGuard } from '../../common/guards/jwt.guard';
 
 @Controller('ai')
 @ApiBearerAuth()
@@ -11,7 +10,6 @@ import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 export class AiController {
     constructor(
         private AiService: AiService,
-        private readonly tasksService: TasksService,
     ) { }
 
 

@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { join } from 'path';
 import { TasksModule } from './components/tasks/tasks.module';
 import { UsersModule } from './components/users/users.module';
 import { AuthModule } from './components/auth/auth.module';

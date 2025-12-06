@@ -4,10 +4,12 @@ import * as bcrypt from 'bcrypt';
 import { RegisterDto } from '../../components/auth/dto/Register.dto';
 import { PrismaService } from 'prisma/prisma.service';
 import { serviceConfig } from '../../config/env.config';
+import { MessageEnum } from '../../common/enums/message.enum';
 
 
 @Injectable()
 export class AuthService {
+    readonly useMultipleRefreshTokens = false; // Set to true to enable multiple tokens
     constructor(
         private prisma: PrismaService,
         private jwtService: JwtService,
@@ -43,21 +45,27 @@ export class AuthService {
 
     private async saveHashedRefreshToken(userId: string, refreshToken: string, expiresAt?: Date, device?: string) {
         const hash = await bcrypt.hash(refreshToken, 10);
-        //* single refresh token
-        await this.prisma.user.update({
-            where: { id: userId },
-            data: { refreshHash: hash },
-        });
 
-        //* multible refresh tokens (RefreshToken model)
-        // await this.prisma.refreshToken.create({
-        //     data: {
-        //         tokenHash: hash,
-        //         userId,
-        //         expiresAt: expiresAt ?? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-        //         device,
-        //     },
-        // });
+        if (this.useMultipleRefreshTokens) {
+            // * multiple refresh tokens(RefreshToken model)
+            await this.prisma.refreshToken.create({
+                data: {
+                    tokenHash: hash,
+                    userId,
+                    expiresAt: expiresAt ?? new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+                    device,
+                },
+            });
+        } else {
+            //* single refresh token
+            await this.prisma.user.update({
+                where: { id: userId },
+                data: { refreshHash: hash },
+            });
+
+        }
+
+
     }
 
     async generateTokens(user: any) {
@@ -65,13 +73,17 @@ export class AuthService {
         const token = this.getAccessToken(payload);
         const refreshToken = this.getRefreshToken(payload);
 
-        //* multible refresh tokens (RefreshToken model)
-        // compute expiry date from JWT_REFRESH_EXPIRY (simple approach: 7 days)
-        // const refreshExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-        // await this.saveHashedRefreshToken(user.id, refreshToken, refreshExpiry);
+        if (this.useMultipleRefreshTokens) {
+            //* multible refresh tokens (RefreshToken model)
+            //* compute expiry date from JWT_REFRESH_EXPIRY (simple approach: 7 days)
+            const refreshExpiry = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+            await this.saveHashedRefreshToken(user.id, refreshToken, refreshExpiry);
+            return { token, refreshToken };
+        } else {
+            await this.saveHashedRefreshToken(user.id, refreshToken);
+            return { token, refreshToken };
+        }
 
-        await this.saveHashedRefreshToken(user.id, refreshToken);
-        return { token, refreshToken };
     }
 
     async login(user: any) {
@@ -89,7 +101,7 @@ export class AuthService {
         });
 
         if (existing) {
-            throw new ConflictException('Email is already registered');
+            throw new ConflictException(MessageEnum.error.EMAIL_EXISTS);
         }
 
         const hashedPassword = await bcrypt.hash(dto.password, 10);
@@ -119,7 +131,7 @@ export class AuthService {
                 secret: serviceConfig.service.jwtRefreshSecret,
             });
         } catch (err) {
-            throw new ForbiddenException('Invalid refresh token');
+            throw new ForbiddenException(MessageEnum.error.INVALID_REFRESH_TOKEN);
         }
 
         // Find stored hashed refresh token for user and compare
@@ -128,14 +140,14 @@ export class AuthService {
         });
 
         if (!user || !user.refreshHash)
-            throw new ForbiddenException('Access denied');
+            throw new ForbiddenException(MessageEnum.error.ACCESS_DENIED);
 
         const isMatch = await bcrypt.compare(
             providedRefreshToken,
             user.refreshHash,
         );
 
-        if (!isMatch) throw new ForbiddenException('Refresh token invalid');
+        if (!isMatch) throw new ForbiddenException(MessageEnum.error.INVALID_REFRESH_TOKEN);
 
         // Generate new tokens
         const tokens = await this.generateTokens(user);

@@ -5,7 +5,9 @@ import { RegisterDto } from '../../components/auth/dto/Register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ApiBody } from '@nestjs/swagger';
 import { Request, Response } from 'express';
-import { serviceConfig } from 'src/config/env.config';
+import { getRefreshCookieOptions } from '../../common/utility/cookies';
+
+
 
 @Controller('auth')
 export class AuthController {
@@ -17,15 +19,9 @@ export class AuthController {
     async register(@Body() dto: RegisterDto, @Res({ passthrough: true }) res: Response) {
         const result = await this.authService.register(dto);
         // set httpOnly cookie for refresh token (recommended)
-        res.cookie('refreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: serviceConfig.service.nodeEnv,
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        res.cookie('refreshToken', result.refreshToken, getRefreshCookieOptions());
         return { token: result.token, name: result.name, email: result.email };
     }
-
 
     @Post('login')
     @UseGuards(LocalGuard)
@@ -35,12 +31,7 @@ export class AuthController {
 
     async login(@Req() req: any, @Res({ passthrough: true }) res: Response) {
         const result = await this.authService.login(req.user);
-        res.cookie('refreshToken', result.refreshToken, {
-            httpOnly: true,
-            secure: serviceConfig.service.nodeEnv,
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        res.cookie('refreshToken', result.refreshToken, getRefreshCookieOptions());
         return { token: result.token, name: result.name };
     }
 
@@ -50,12 +41,7 @@ export class AuthController {
         const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
         if (!refreshToken) throw new ForbiddenException('No refresh token provided');
         const tokens = await this.authService.refreshTokens(refreshToken);
-        res.cookie('refreshToken', tokens.refreshToken, {
-            httpOnly: true,
-            secure: serviceConfig.service.nodeEnv,
-            sameSite: 'lax',
-            maxAge: 7 * 24 * 60 * 60 * 1000,
-        });
+        res.cookie('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
         return { token: tokens.token };
     }
 }  
