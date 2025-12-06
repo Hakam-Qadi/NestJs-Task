@@ -4,10 +4,11 @@ import {
     InternalServerErrorException,
     NotFoundException,
 } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { serviceConfig } from '../../config/env.config';
 import { SendMessageDto } from './dto/send-message.dto';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { PrismaService } from 'prisma/prisma.service';
+import { MessageEnum } from '../../common/enums/message.enum';
 
 @Injectable()
 export class AiService {
@@ -15,14 +16,13 @@ export class AiService {
 
     constructor(
         private prisma: PrismaService,
-        configService: ConfigService,
     ) {
         const genAI = new GoogleGenerativeAI(
-            configService.get<string>('GOOGLE_API_KEY') || "",
+            serviceConfig.ai.googleApiKey || "",
         );
 
         this.model = genAI.getGenerativeModel({
-            model: configService.get<string>('AI_MODEL') || "",
+            model: serviceConfig.ai.aiModel || "",
         });
     }
 
@@ -43,29 +43,16 @@ export class AiService {
                 include: { user: true },
             });
 
-            if (!task) throw new NotFoundException('Task not found');
+            if (!task) throw new NotFoundException(MessageEnum.error.TASK_NOT_FOUND)
             if (task.userId !== userId)
-                throw new ForbiddenException('Access denied');
+                throw new ForbiddenException(MessageEnum.error.ACCESS_DENIED);
 
-            const prompt = `
-        Rewrite the following task title and description ONLY if they exist.
-        If the description is null, DO NOT create one — return it as null.
-
-        Return ONLY valid JSON with the fields "title" and "description".
-        No explanations, no notes, no markdown. Do NOT include backticks.
-
-        Input:
-        {
-          "title": "${task.title}",
-          "description": ${task.description ? `"${task.description}"` : null}
-        }
-
-        Output (JSON only):
-        {
-          "title": "",
-          "description": null
-        }
-      `;
+            const prompt = MessageEnum.ai.ENHANCE_TASK_PROMPT
+                .replace('{{title}}', task.title)
+                .replace(
+                    '{{description}}',
+                    task.description ? `"${task.description}"` : 'null',
+                );
 
             const result = await this.model.generateContent(prompt);
             let output = result.response.text();

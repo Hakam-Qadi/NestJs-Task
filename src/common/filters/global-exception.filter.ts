@@ -5,6 +5,7 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+import { MessageEnum } from '../enums/message.enum';
 
 @Catch()
 export class GlobalExceptionFilter implements ExceptionFilter {
@@ -13,7 +14,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal server error';
+    let message = MessageEnum.error.SERVER_ERROR;
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();

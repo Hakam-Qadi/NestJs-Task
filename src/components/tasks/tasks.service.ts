@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/commo
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { PrismaService } from 'prisma/prisma.service';
+import { MessageEnum } from '../../common/enums/message.enum';
 
 @Injectable()
 export class TasksService {
@@ -61,8 +62,8 @@ export class TasksService {
       }
     });
 
-    if (!task) throw new NotFoundException('Task not found');
-    if (task.userId !== userId) throw new ForbiddenException('Access denied');
+    if (!task) throw new NotFoundException(MessageEnum.error.TASK_NOT_FOUND);
+    if (task.userId !== userId) throw new ForbiddenException(MessageEnum.error.ACCESS_DENIED);
 
     return task;
   }
@@ -70,8 +71,8 @@ export class TasksService {
   async update(userId: string, id: string, dto: UpdateTaskDto) {
     const task = await this.prisma.task.findUnique({ where: { id } });
 
-    if (!task) throw new NotFoundException('Task not found');
-    if (task.userId !== userId) throw new ForbiddenException('Access denied');
+    if (!task) throw new NotFoundException(MessageEnum.error.TASK_NOT_FOUND);
+    if (task.userId !== userId) throw new ForbiddenException(MessageEnum.error.ACCESS_DENIED);
 
     return this.prisma.task.update({
       where: { id },
@@ -85,11 +86,11 @@ export class TasksService {
   async remove(userId: string, id: string) {
     const task = await this.prisma.task.findUnique({ where: { id } });
 
-    if (!task) throw new NotFoundException('Task not found');
-    if (task.userId !== userId) throw new ForbiddenException('Access denied');
+    if (!task) throw new NotFoundException(MessageEnum.error.TASK_NOT_FOUND);
+    if (task.userId !== userId) throw new ForbiddenException(MessageEnum.error.ACCESS_DENIED);
 
     await this.prisma.task.delete({ where: { id } });
 
-    return { message: 'Task deleted successfully' };
+    return { message: MessageEnum.error.TASK_DELETED };
   }
 }

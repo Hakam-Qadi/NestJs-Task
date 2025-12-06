@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UpdateUserDto } from './dto/update-user.dto';
 import * as bcrypt from 'bcrypt';
 import { PrismaService } from 'prisma/prisma.service';
+import { MessageEnum } from '../../common/enums/message.enum';
 
 @Injectable()
 export class UsersService {
@@ -24,19 +25,19 @@ export class UsersService {
                 }
             });
 
-            if (!user) throw new UnauthorizedException('User not found');
+            if (!user) throw new UnauthorizedException(MessageEnum.error.USER_NOT_FOUND);
 
             return user;
 
         } catch (err) {
-            throw new UnauthorizedException('Invalid or expired token');
+            throw new UnauthorizedException(MessageEnum.error.INVALID_TOKEN);
         }
     }
 
     async update(id: string, dto: UpdateUserDto) {
         const user = await this.prisma.user.findUnique({ where: { id } });
 
-        if (!user) throw new UnauthorizedException('User not found');
+        if (!user) throw new UnauthorizedException(MessageEnum.error.USER_NOT_FOUND);
 
         return this.prisma.user.update({
             where: { id },
@@ -49,7 +50,7 @@ export class UsersService {
     async resetPassword(id: string, dto: UpdateUserDto) {
         const user = await this.prisma.user.findUnique({ where: { id } });
 
-        if (!user) throw new UnauthorizedException('User not found');
+        if (!user) throw new UnauthorizedException(MessageEnum.error.USER_NOT_FOUND);
 
         const hashed = await bcrypt.hash(dto.password, 10);
 
@@ -58,16 +59,16 @@ export class UsersService {
             data: { password: hashed },
         });
 
-        return { message: 'Password reset successfully' };
+        return { message: MessageEnum.error.PASSWORD_RESET_SUCCESS };
     }
 
     async deleteAccount(id: string) {
         const user = await this.prisma.user.findUnique({ where: { id }, omit: { password: true } });
 
-        if (!user) throw new UnauthorizedException('User not found');
+        if (!user) throw new UnauthorizedException(MessageEnum.error.USER_NOT_FOUND);
 
         await this.prisma.user.delete({ where: { id } });
 
-        return { message: 'Account deleted successfully' };
+        return { message: MessageEnum.error.USER_DELETED };
     }
 }

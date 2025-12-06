@@ -1,0 +1,52 @@
+export const MessageEnum = {
+  error: {
+    USER_CREATED: 'User created successfully.',
+    USER_UPDATED: 'User updated successfully.',
+    USER_DELETED: 'User deleted successfully.',
+    USER_NOT_FOUND: 'User not found.',
+    PASSWORD_RESET_SUCCESS: 'Password reset successfully.',
+    EMAIL_EXISTS: 'Email already exists.',
+    AUTH_SUCCESS: 'Authentication successful.',
+    AUTH_FAILED: 'Authentication failed.',
+    TASK_CREATED: 'Task created successfully.',
+    TASK_UPDATED: 'Task updated successfully.',
+    TASK_DELETED: 'Task deleted successfully.',
+    TASK_NOT_FOUND: 'Task not found.',
+    ACCESS_DENIED: 'Access denied.',
+    INVALID_INPUT: 'Invalid input provided.',
+    INVALID_REFRESH_TOKEN: 'Refresh token invalid.',
+    INVALID_TOKEN: 'Invalid or expired token.',
+    NOT_FOUND: 'Resource not found.',
+    SERVER_ERROR: 'Internal server error.',
+  },
+  swaggerExample: {
+    MESSAGE: 'Hello, how are you?',
+    EMAIL: "john@example.com",
+    PASSWORD: "StrongPass@123",
+    NAME: 'John Doe',
+    TITLE: "Complete the project documentation",
+    DESCRIPTION: "Finish writing the documentation for the new project by end of the week.",
+    DUE_DATE: "2025-12-01T15:00:00.000Z",
+    STATUS: "IN_PROGRESS",
+    UPDATED_TITLE: "Finish project report",
+    UPDATED_DESCRIPTION: "Prepare slides and summary",
+    UPDATED_DUE_DATE: "2025-12-20T11:00:00.000Z",
+    UPDATED_NAME: 'Hakam Qadi',
+    UPDATED_PASSWORD: "Hakam@2000",
+    VALIDATION: {
+      NAME_MIN_LENGTH: 'Name must be at least 2 characters long',
+      NAME_MAX_LENGTH: 'Name must be less than 50 characters',
+      EMAIL: "Invalid email format",
+      PASSWORD_MIN_LENGTH: 'Password must be at least 8 characters long',
+      PASSWORD_MAX_LENGTH: 'Password must be less than 100 characters',
+      PASSWORD_UPPERCASE: 'Password must contain at least one uppercase letter',
+      PASSWORD_LOWERCASE: 'Password must contain at least one lowercase letter',
+      PASSWORD_NUMBER: 'Password must contain at least one number',
+      PASSWORD_SPECIAL_CHAR: 'Password must contain at least one special character (@$!%*?&)',
+      INVALID_STATUS: 'Status must be PENDING, IN_PROGRESS, or COMPLETED'
+    }
+  },
+  ai: {
+    ENHANCE_TASK_PROMPT: `Rewrite the following task title and description ONLY if they exist.\nIf the description is null, DO NOT create one — return it as null.\n\nReturn ONLY valid JSON with the fields \"title\" and \"description\".\nNo explanations, no notes, no markdown. Do NOT include backticks.\n\nInput:\n{\n  \"title\": "{{title}}",\n  \"description\": {{description}}\n}\n\nOutput (JSON only):\n{\n  \"title\": \"\",\n  \"description\": null\n}`
+  }
+};
