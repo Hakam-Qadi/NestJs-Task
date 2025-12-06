@@ -26,6 +26,7 @@ test/                     # End-to-end tests
 ```
 
 
+
 ## Prisma Setup & Usage
 
 Prisma is used for database access and migrations in this project.
@@ -37,6 +38,29 @@ If you need to initialize Prisma in a new project:
 ```shell
 npx prisma init
 ```
+
+### 2. Automated Migrations & Seeding
+
+#### Run Migrations
+
+- **Development:**  
+	```shell
+	npm run migrate:dev
+	```
+	Runs migrations interactively and updates the Prisma Client.
+
+#### Seed the Database
+
+- **Run the seed script:**  
+	```shell
+	npm run seed
+	```
+	The seed script checks for existing records (by email for users) and skips duplicates, logging actions such as “Record exists — skipping” and “Record inserted successfully.”
+
+#### Notes
+
+- You can safely run migrations and seeds multiple times; the system prevents duplicate data and errors.
+- Check the console output for helpful logs about what was seeded or skipped.
 
 This creates the `prisma/` folder with `schema.prisma`.
 
