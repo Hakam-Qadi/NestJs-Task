@@ -1,14 +1,20 @@
+
 # NestJs-Task
 
-A minimal NestJS example project with authentication, users and tasks modules.
+A full-featured NestJS project with authentication, user, and task management, using Prisma ORM and PostgreSQL. Includes modular architecture, robust error handling, and ready-to-use Docker and Prisma configurations.
+
 
 ## Features
 
-- User authentication with JWT and local strategies
-- User management (CRUD)
-- Task management (CRUD)
-- Global exception handling and response interceptors
-- Modular structure for scalability
+- User authentication (JWT & local strategies)
+- User CRUD (register, login, update, etc.)
+- Task CRUD (create, update, delete, list)
+- Refresh token support
+- Global exception filter & response interceptor
+- Modular, scalable code structure
+- Prisma ORM with migrations & seeding
+- Dockerized PostgreSQL support
+- Swagger API documentation
 
 ## Project Structure
 
@@ -16,91 +22,78 @@ A minimal NestJS example project with authentication, users and tasks modules.
 src/
 	app.module.ts           # Root module
 	main.ts                 # Application entry point
-	common/                 # Shared modules, guards, filters, interceptors, strategies
+	common/                 # Shared modules, enums, guards, filters, interceptors, strategies
+		enums/                # Enum definitions
+		filters/              # Global exception filter
+		guards/               # Auth guards
+		integrations/         # External integrations (e.g., advice service)
+		interceptors/         # Response interceptors
+		strategies/           # Auth strategies
+		utility/              # Utility functions (e.g., cookies)
 	components/
-		auth/                 # Authentication logic (controllers, services, DTOs)
-		tasks/                # Task management (controllers, services, DTOs, entities)
-		users/                # User management (controllers, services, DTOs, entities)
-	config/                 # Configuration files (env, swagger, validation)
+		ai/                   # AI integration (optional)
+		auth/                 # Auth logic (controllers, services, DTOs)
+		tasks/                # Task logic (controllers, services, DTOs)
+		users/                # User logic (controllers, services, DTOs)
+	config/                 # App config (env, swagger, validation)
+	generated/              # Prisma generated client
 test/                     # End-to-end tests
+prisma/                   # Prisma schema, migrations, seed
 ```
+
 
 
 
 ## Prisma Setup & Usage
 
-Prisma is used for database access and migrations in this project.
+Prisma is used for database access, migrations, and seeding.
 
-### 1. Initialize Prisma
 
-If you need to initialize Prisma in a new project:
+### Migrations
 
-```shell
-npx prisma init
+To apply schema changes and update the database:
+
+```powershell
+npm run migrate:dev
 ```
-
-### 2. Automated Migrations & Seeding
-
-#### Run Migrations
-
-- **Development:**  
-	```shell
-	npm run migrate:dev
-	```
-	Runs migrations interactively and updates the Prisma Client.
-
-#### Seed the Database
-
-- **Run the seed script:**  
-	```shell
-	npm run seed
-	```
-	The seed script checks for existing records (by email for users) and skips duplicates, logging actions such as “Record exists — skipping” and “Record inserted successfully.”
-
-#### Notes
-
-- You can safely run migrations and seeds multiple times; the system prevents duplicate data and errors.
-- Check the console output for helpful logs about what was seeded or skipped.
-
-This creates the `prisma/` folder with `schema.prisma`.
-
-### 2. Run Migrations
-
-To apply schema changes to your database:
-
-```shell
+or
+```powershell
 npx prisma migrate dev --name <migration-name>
 ```
 
-This creates a new migration and updates your database.
+### Seeding
 
-### 3. Open Prisma Studio
+To seed the database with initial data:
 
-To visually inspect and edit your database:
-
-```shell
-npx prisma studio
+```powershell
+npm run seed
 ```
-
-This opens a web UI for your database.
-
-### 4. Seed the Database
-
-To seed initial data:
-
-```shell
+or
+```powershell
 npx prisma db seed
 ```
 
-For more details, see the [Prisma documentation](https://www.prisma.io/docs/).
+The seed script is idempotent and logs actions for each record.
+
+### Prisma Studio
+
+To open Prisma Studio (visual DB browser):
+
+```powershell
+npx prisma studio
+```
+
+For more, see [Prisma docs](https://www.prisma.io/docs/).
+
 
 ## Prerequisites
 
-- Node.js (v16 or later recommended)
-- npm (comes with Node) or Yarn
-- Windows PowerShell (this repository was edited on Windows; PowerShell examples provided)
+- Node.js (v16+ recommended)
+- npm or Yarn
+- PostgreSQL (local or Docker)
 
-## Install
+
+## Installation
 
 Clone the repo and install dependencies:
 
@@ -110,80 +103,73 @@ cd NestJs-Task
 npm install
 ```
 
-If you prefer Yarn:
-
-```powershell
-yarn install
-```
 
 ## Environment
 
-Create a `.env` file in the project root (the app may read environment variables directly). Example values:
+Create a `.env` file in the project root. Example:
 
 ```
 DB_HOST=localhost
 DB_PORT=5432
-DB_USERNAME=user
-DB_PASSWORD=pass1234
-DB_NAME=my_database
-
-JWT_SECRET=dummy_jwt_secret
-
+DB_USERNAME=postgres
+DB_PASSWORD=postgres
+DB_NAME=nestjs_task
+JWT_SECRET=your_jwt_secret
 ```
+
 
 
 ## Database
 
-This project expects a PostgreSQL database. You can run the database using Docker (recommended) or connect to an existing instance.
+This project uses PostgreSQL. You can use Docker Compose (recommended) or connect to your own instance.
 
 ### Using Docker Compose
 
-This repository includes a `docker-compose.yml` file to quickly start a PostgreSQL database in a container. To start the database:
+Start a PostgreSQL container:
 
 ```powershell
 docker-compose up -d
 ```
 
-This will launch a PostgreSQL container with the configuration specified in `docker-compose.yml`. Make sure your `.env` file matches the credentials and database name set in the compose file.
-
-To stop the database:
+Stop the container:
 
 ```powershell
 docker-compose down
 ```
 
+Ensure your `.env` matches the credentials in `docker-compose.yml`.
+
 ### Manual Connection
 
-If you prefer to use your own PostgreSQL instance, configure your connection in the `.env` file as shown above. Make sure the database exists and credentials are correct. Example command to test connection (using psql):
+If using your own PostgreSQL, update `.env` accordingly. Example test command:
 
 ```powershell
-psql "host=localhost port=5432 dbname=my_database user=user password=pass1234" -c "SELECT 1;"
+psql "host=localhost port=5432 dbname=nestjs_task user=postgres password=postgres" -c "SELECT 1;"
 ```
 
-You may need to create the database manually if it does not exist.
 
-## Common scripts
+## Common Scripts
 
-Most NestJS projects include standard npm scripts. Check `package.json` for exact names. Typical commands:
+Check `package.json` for all scripts. Most common:
 
 - Start in development (watch mode):
+	```powershell
+	npm run start:dev
+	```
+- Build and start production:
+	```powershell
+	npm run build
+	npm run start:prod
+	```
+- Run unit tests:
+	```powershell
+	npm run test
+	```
+- Run e2e tests:
+	```powershell
+	npm run test:e2e
+	```
 
-```powershell
-npm run start:dev
-```
-
-- Start production (build first):
-
-```powershell
-npm run build
-npm run start:prod
-```
-
-- Run tests (unit):
-
-```powershell
-npm run test
-```
 
 ## Build
 
@@ -191,51 +177,59 @@ npm run test
 npm run build
 ```
 
-The compiled files will be in the `dist/` folder (default for NestJS). Start the compiled app with `npm run start:prod` or node directly:
+Compiled files are in `dist/`. Start with:
 
 ```powershell
+npm run start:prod
+# or
 node dist/main.js
 ```
 
+
 ## API Documentation
 
-This project uses Swagger for API documentation. Once the app is running, visit:
+Swagger is enabled. After starting the app, visit:
 
 ```
 http://localhost:3000/api/docs
 ```
 
-to view and interact with the API docs (URL may vary if you change the port).
+to view and interact with the API docs.
 
-## Tests
 
-Run unit tests with Jest:
+## Testing
+
+Run unit tests:
 
 ```powershell
 npm run test
 ```
 
-Run e2e tests (if present):
+Run e2e tests:
 
 ```powershell
 npm run test:e2e
 ```
 
+
 ## Troubleshooting
 
-- If the server does not start, confirm `PORT` is not already in use.
-- If authentication fails, ensure `JWT_SECRET` matches what was used to sign tokens.
-- If a script name from this README fails, open `package.json` and use the scripts listed there.
+- If the server does not start, check if `PORT` is in use.
+- If authentication fails, ensure `JWT_SECRET` is correct.
+- If a script fails, check `package.json` for available scripts.
 
-## Development notes
 
-- Modules in this repo: `auth`, `users`, and `tasks` (see `src/` for code).
-- Typical NestJS entrypoint: `src/main.ts`.
+## Development Notes
+
+- Main modules: `auth`, `users`, `tasks`, `ai` (see `src/components/`)
+- Entry point: `src/main.ts`
+
 
 ## Contributing
 
-Feel free to open issues or submit pull requests.
+Contributions are welcome! Open issues or submit pull requests.
+
 
 ## License
 
-This project does not include an explicit license file. If you intend to reuse or distribute code, add a `LICENSE` file or consult the repository owner.
+No explicit license. Add a `LICENSE` file if you plan to distribute or reuse this code.

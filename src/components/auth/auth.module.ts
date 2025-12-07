@@ -13,7 +13,7 @@ import { serviceConfig } from '../../config/env.config';
   imports: [
     JwtModule.registerAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
+      useFactory: () => ({
         secret: serviceConfig.service.jwtSecret,
         signOptions: { expiresIn: '1h' },
       }),

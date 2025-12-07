@@ -16,7 +16,10 @@ export const MessageEnum = {
     INVALID_INPUT: 'Invalid input provided.',
     INVALID_REFRESH_TOKEN: 'Refresh token invalid.',
     INVALID_TOKEN: 'Invalid or expired token.',
+    INVALID_CREDENTIALS: 'Invalid credentials.',
+    NO_REFRESH_TOKEN_PROVIDED: 'No refresh token provided.',
     NOT_FOUND: 'Resource not found.',
+    RATE_LIMITED: 'AI service is currently rate-limited. Please try again later.',
     SERVER_ERROR: 'Internal server error.',
   },
   swaggerExample: {

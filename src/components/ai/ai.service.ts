@@ -31,8 +31,11 @@ export class AiService {
             const result = await this.model.generateContent(dto.message);
             return result.response.text();
         } catch (error) {
-            console.error('Gemini Error :: ', error);
-            throw new Error('AI service failed: ' + error.message);
+            console.error('Gemini Error :: ', error.message);
+            if (error.status === 429) {
+                throw new InternalServerErrorException(MessageEnum.error.RATE_LIMITED)
+            }
+            throw new InternalServerErrorException('AI service failed: ' + error.message);
         }
     }
 
@@ -77,13 +80,10 @@ export class AiService {
 
             return updated;
         } catch (error) {
-            console.error('Enhance Task Error :: ', error);
+            console.error('Enhance Task Error :: ', error.message);
 
-            if (
-                error instanceof NotFoundException ||
-                error instanceof ForbiddenException
-            ) {
-                throw error;
+            if (error.status === 429) {
+                throw new InternalServerErrorException(MessageEnum.error.RATE_LIMITED);
             }
 
             throw new InternalServerErrorException(error.message);

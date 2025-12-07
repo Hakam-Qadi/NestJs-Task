@@ -6,6 +6,7 @@ import { LoginDto } from './dto/login.dto';
 import { ApiBody } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { getRefreshCookieOptions } from '../../common/utility/cookies';
+import { MessageEnum } from '../../common/enums/message.enum';
 
 
 
@@ -39,7 +40,7 @@ export class AuthController {
     async refresh(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
         // read refresh token from cookie
         const refreshToken = req.cookies?.refreshToken || req.body?.refreshToken;
-        if (!refreshToken) throw new ForbiddenException('No refresh token provided');
+        if (!refreshToken) throw new ForbiddenException(MessageEnum.error.NO_REFRESH_TOKEN_PROVIDED);
         const tokens = await this.authService.refreshTokens(refreshToken);
         res.cookie('refreshToken', tokens.refreshToken, getRefreshCookieOptions());
         return { token: tokens.token };
