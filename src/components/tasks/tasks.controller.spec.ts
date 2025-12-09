@@ -30,12 +30,14 @@ jest.mock('../../config/validate-env.config', () => ({
 }));
 
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException, ForbiddenException } from '@nestjs/common';
 import { TasksController } from './tasks.controller';
 import { TasksService } from './tasks.service';
 import { AdviceService } from '../../common/integrations/advice.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { TaskStatus } from '../../common/enums/task.enum';
+import { MessageEnum } from '../../common/enums/message.enum';
 
 describe('TasksController', () => {
   let controller: TasksController;
@@ -300,24 +302,26 @@ describe('TasksController', () => {
       });
     });
 
-    it('should handle task not found', async () => {
+    it('should throw NotFoundException when task not found', async () => {
       const taskId = 'non-existent-task';
-      const error = new Error('Task not found.');
+      const error = new NotFoundException(MessageEnum.error.TASK_NOT_FOUND);
       
       mockTasksService.findOne.mockRejectedValue(error);
 
-      await expect(controller.findOne(mockRequest, taskId)).rejects.toThrow('Task not found.');
+      await expect(controller.findOne(mockRequest, taskId)).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne(mockRequest, taskId)).rejects.toThrow(MessageEnum.error.TASK_NOT_FOUND);
       expect(tasksService.findOne).toHaveBeenCalledWith(mockUser.id, taskId);
       expect(adviceService.getAdvice).not.toHaveBeenCalled();
     });
 
-    it('should handle access denied error', async () => {
+    it('should throw ForbiddenException when access denied', async () => {
       const taskId = 'task-123';
-      const error = new Error('Access denied.');
+      const error = new ForbiddenException(MessageEnum.error.ACCESS_DENIED);
       
       mockTasksService.findOne.mockRejectedValue(error);
 
-      await expect(controller.findOne(mockRequest, taskId)).rejects.toThrow('Access denied.');
+      await expect(controller.findOne(mockRequest, taskId)).rejects.toThrow(ForbiddenException);
+      await expect(controller.findOne(mockRequest, taskId)).rejects.toThrow(MessageEnum.error.ACCESS_DENIED);
       expect(tasksService.findOne).toHaveBeenCalledWith(mockUser.id, taskId);
       expect(adviceService.getAdvice).not.toHaveBeenCalled();
     });
@@ -415,31 +419,33 @@ describe('TasksController', () => {
       expect(result).toEqual(updatedTask);
     });
 
-    it('should handle task not found during update', () => {
+    it('should throw NotFoundException when task not found during update', () => {
       const taskId = 'non-existent-task';
       const updateTaskDto: UpdateTaskDto = {
         title: 'Updated title',
       };
 
       mockTasksService.update.mockImplementation(() => {
-        throw new Error('Task not found.');
+        throw new NotFoundException(MessageEnum.error.TASK_NOT_FOUND);
       });
 
-      expect(() => controller.update(mockRequest, taskId, updateTaskDto)).toThrow('Task not found.');
+      expect(() => controller.update(mockRequest, taskId, updateTaskDto)).toThrow(NotFoundException);
+      expect(() => controller.update(mockRequest, taskId, updateTaskDto)).toThrow(MessageEnum.error.TASK_NOT_FOUND);
       expect(tasksService.update).toHaveBeenCalledWith(mockUser.id, taskId, updateTaskDto);
     });
 
-    it('should handle access denied during update', () => {
+    it('should throw ForbiddenException when access denied during update', () => {
       const taskId = 'task-123';
       const updateTaskDto: UpdateTaskDto = {
         title: 'Updated title',
       };
 
       mockTasksService.update.mockImplementation(() => {
-        throw new Error('Access denied.');
+        throw new ForbiddenException(MessageEnum.error.ACCESS_DENIED);
       });
 
-      expect(() => controller.update(mockRequest, taskId, updateTaskDto)).toThrow('Access denied.');
+      expect(() => controller.update(mockRequest, taskId, updateTaskDto)).toThrow(ForbiddenException);
+      expect(() => controller.update(mockRequest, taskId, updateTaskDto)).toThrow(MessageEnum.error.ACCESS_DENIED);
       expect(tasksService.update).toHaveBeenCalledWith(mockUser.id, taskId, updateTaskDto);
     });
 
@@ -497,25 +503,27 @@ describe('TasksController', () => {
       expect(result).toEqual(deleteResponse);
     });
 
-    it('should handle task not found during deletion', () => {
+    it('should throw NotFoundException when task not found during deletion', () => {
       const taskId = 'non-existent-task';
 
       mockTasksService.remove.mockImplementation(() => {
-        throw new Error('Task not found.');
+        throw new NotFoundException(MessageEnum.error.TASK_NOT_FOUND);
       });
 
-      expect(() => controller.remove(mockRequest, taskId)).toThrow('Task not found.');
+      expect(() => controller.remove(mockRequest, taskId)).toThrow(NotFoundException);
+      expect(() => controller.remove(mockRequest, taskId)).toThrow(MessageEnum.error.TASK_NOT_FOUND);
       expect(tasksService.remove).toHaveBeenCalledWith(mockUser.id, taskId);
     });
 
-    it('should handle access denied during deletion', () => {
+    it('should throw ForbiddenException when access denied during deletion', () => {
       const taskId = 'task-123';
 
       mockTasksService.remove.mockImplementation(() => {
-        throw new Error('Access denied.');
+        throw new ForbiddenException(MessageEnum.error.ACCESS_DENIED);
       });
 
-      expect(() => controller.remove(mockRequest, taskId)).toThrow('Access denied.');
+      expect(() => controller.remove(mockRequest, taskId)).toThrow(ForbiddenException);
+      expect(() => controller.remove(mockRequest, taskId)).toThrow(MessageEnum.error.ACCESS_DENIED);
       expect(tasksService.remove).toHaveBeenCalledWith(mockUser.id, taskId);
     });
 
